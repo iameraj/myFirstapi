@@ -14,7 +14,6 @@ class AdminSiteTest(TestCase):
         """Create user and Client"""
         self.client = Client()
         self.admin_user = get_user_model().objects.create_superuser(
-            username="konoAdminDA",
             email="admin_user@example.com",
             password="iamPassw0rd",
         )
@@ -22,7 +21,6 @@ class AdminSiteTest(TestCase):
         self.user = get_user_model().objects.create_user(
             email="normal_user@example.com",
             password="iamPassw0rd",
-            username="normal_test_user",
         )
 
     def test_users_list(self):
