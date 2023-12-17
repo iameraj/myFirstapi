@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from rest_framework.test import APIClient
+from rest_framework.test import RequestsClient
 from rest_framework import status
 
 CREATE_USER_URL = reverse("user:create")
@@ -20,7 +20,7 @@ class PublicUserApiTests(TestCase):
     """Test the public methods of user"""
 
     def setUp(self):
-        self.client = APIClient()
+        self.client = RequestsClient()
 
     def test_create_user_success(self):
         """Test for creating a user"""
@@ -29,7 +29,7 @@ class PublicUserApiTests(TestCase):
             "password": "testPass01",
             "name": "name01",
         }
-        res = self.client.post(CREATE_USER_URL, payload, format='json')
+        res = self.client.post(CREATE_USER_URL, payload, format="json")
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
@@ -45,7 +45,7 @@ class PublicUserApiTests(TestCase):
             "name": "name01",
         }
         create_user(**payload)
-        res = self.client.post(CREATE_USER_URL, payload, format='json')
+        res = self.client.post(CREATE_USER_URL, payload, format="json")
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -57,8 +57,8 @@ class PublicUserApiTests(TestCase):
             "password": "s01",
             "name": "name01",
         }
-        res = self.client.post(CREATE_USER_URL, payload, format='json')
-        
+        res = self.client.post(CREATE_USER_URL, payload, format="json")
+
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
         user_exists = get_user_model().objects.filter(email=payload["email"]).exists()
