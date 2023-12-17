@@ -19,7 +19,7 @@ services:
       - DB_HOST=db
       - DB_NAME=devdb
       - DB_USER=devuser
-      - DB_PASS=jaba jaba
+      - DB_PASS=jabajaba
     depends_on:
       - db
 
@@ -30,7 +30,7 @@ services:
     environment:
       - POSTGRES_DB=devdb
       - POSTGRES_USER=devuser
-      - POSTGRES_PASSWORD=jaba jaba
+      - POSTGRES_PASSWORD=jabajaba
 
 volumes:
   dev-db-data:
