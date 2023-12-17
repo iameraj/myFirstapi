@@ -21,6 +21,7 @@ services:
       - DB_NAME=devdb
       - DB_USER=devuser
       - DB_PASS=jabajaba
+      - DB_PORT=5432
     depends_on:
       - db
 
