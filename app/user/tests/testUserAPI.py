@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from rest_framework.test import RequestsClient
+from rest_framework.test import APIClient
 from rest_framework import status
 
 CREATE_USER_URL = reverse("user:create")
@@ -20,7 +20,7 @@ class PublicUserApiTests(TestCase):
     """Test the public methods of user"""
 
     def setUp(self):
-        self.client = RequestsClient()
+        self.client = APIClient()
 
     def test_create_user_success(self):
         """Test for creating a user"""
@@ -61,5 +61,7 @@ class PublicUserApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-        user_exists = get_user_model().objects.filter(email=payload["email"]).exists()
+        user_exists = (
+            get_user_model().objects.filter(email=payload["email"]).exists()
+        )
         self.assertFalse(user_exists)
