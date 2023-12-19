@@ -20,10 +20,10 @@ from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/schema/", SpectacularAPIView.as_view(), name="api-shema"),
+    path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
     path(
         "api/docs/",
-        SpectacularSwaggerView.as_view(url_name="api-shema"),
+        SpectacularSwaggerView.as_view(url_name="api-schema"),
         name="api-docs",
     ),
     path("api/user", include("user.urls")),
