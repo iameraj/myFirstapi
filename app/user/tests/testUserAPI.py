@@ -5,10 +5,11 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from rest_framework.test import APIClient
+from rest_framework.test import RequestsClient
 from rest_framework import status
 
 CREATE_USER_URL = reverse("user:create")
+TOKEN_URL = reverse("user:token")
 
 
 def create_user(**params):
@@ -20,7 +21,7 @@ class PublicUserApiTests(TestCase):
     """Test the public methods of user"""
 
     def setUp(self):
-        self.client = APIClient()
+        self.client = RequestsClient()
 
     def test_create_user_success(self):
         """Test for creating a user"""
@@ -65,3 +66,49 @@ class PublicUserApiTests(TestCase):
             get_user_model().objects.filter(email=payload["email"]).exists()
         )
         self.assertFalse(user_exists)
+
+    def test_create_token_for_User(self):
+        """Testing generation of tokes for valid credentials"""
+        user_details = {
+            "name": "TestName",
+            "email": "Tst@example.com",
+            "password": "testPassW",
+        }
+        create_user(**user_details)
+
+        payload = {
+            "email": user_details["email"],
+            "password": user_details["password"],
+        }
+        res = self.client.post(TOKEN_URL, payload)
+
+        self.assertIn("token", res.data)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_create_token_with_bad_req(self):
+        """Testing failing of token generation with invalid token"""
+
+        user_details = {
+            "name": "Test2Name",
+            "email": "Tst2@example.com",
+            "password": "testPassW",
+        }
+        create_user(**user_details)
+
+        payload = {
+            "email": user_details["email"],
+            "password": "IamAIncorrectPassword",
+        }
+        res = self.client.post(TOKEN_URL, payload)
+
+        self.assertNotIn("token", res.data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_token_with_No_password(self):
+        """Testing if token generation fails with no password"""
+
+        payload = {"email": "Tst2@example", "password": ""}
+        res = self.client.post(TOKEN_URL, payload)
+
+        self.assertNotIn("token", res.data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
