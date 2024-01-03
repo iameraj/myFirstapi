@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from rest_framework.test import RequestsClient
+from rest_framework.test import APIClient
 from rest_framework import status
 
 CREATE_USER_URL = reverse("user:create")
@@ -21,7 +21,7 @@ class PublicUserApiTests(TestCase):
     """Test the public methods of user"""
 
     def setUp(self):
-        self.client = RequestsClient()
+        self.client = APIClient()
 
     def test_create_user_success(self):
         """Test for creating a user"""
@@ -68,18 +68,15 @@ class PublicUserApiTests(TestCase):
         self.assertFalse(user_exists)
 
     def test_create_token_for_User(self):
-        """Testing generation of tokes for valid credentials"""
-        user_details = {
-            "name": "TestName",
-            "email": "Tst@example.com",
-            "password": "testPassW",
-        }
-        create_user(**user_details)
-
+        """Testing generation of tokens for valid credentials"""
         payload = {
-            "email": user_details["email"],
-            "password": user_details["password"],
+            "email": "exampleUser02@example.com",
+            "password": "testPass02",
+            "name": "name02",
         }
+        create_user(**payload)
+        res = self.client.post(CREATE_USER_URL, payload, format="json")
+
         res = self.client.post(TOKEN_URL, payload)
 
         self.assertIn("token", res.data)
