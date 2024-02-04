@@ -9,7 +9,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.authtoken.serializers import serializers
 from rest_framework.test import APIClient
-from core.models import Recipe
+from core.models import Recipe, User
 from recipe.serializers import RecipeSerializer
 
 RECIPE_URL = reverse("recipe:recipe-list")
@@ -22,7 +22,6 @@ def create_recipe(user, **params):
         "time_minutes": 23,
         "price": Decimal("4.64"),
         "description": "This is a sample recipe description",
-        "link": "https://example.com",
     }
 
     defaults.update(params)
@@ -52,12 +51,13 @@ class PrivateRecipeAPITests(TestCase):
     """
 
     def setUp(self):
-        self.client = APIClient()
-        self.user = get_user_model().objects.create_user(
-            "user@example.com", 
-            "test!password"
+        self.user = User.objects.create_user(
+            email="test3@example.com",
+            password="testpassword",
+            name="TestUserIam",
         )
-        self.client.force_authenticate()
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
 
     def test_retrieve_recipes(self):
         """Tests retrieving recipes"""
