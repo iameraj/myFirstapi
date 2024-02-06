@@ -8,7 +8,7 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-from core.models import Recipe, User
+from core.models import Recipe 
 from recipe.serializers import RecipeSerializer, RecipeDetailSerializer
 
 RECIPE_URL = reverse("recipe:recipe-list")
@@ -32,6 +32,9 @@ def create_recipe(user, **params):
     recipe = Recipe.objects.create(user=user, **defaults)
     return recipe
 
+def create_user(**params):
+    """Create and return a new user"""
+    return get_user_model().objects.create_user(**params)
 
 class PublicRecipeAPITests(TestCase):
     """
@@ -54,12 +57,8 @@ class PrivateRecipeAPITests(TestCase):
     """
 
     def setUp(self):
-        self.user = get_user_model().objects.create_user(
-            email="test3@example.com",
-            password="testpassword",
-            name="TestUserIam",
-        )
         self.client = APIClient()
+        self.user = create_user(email="test@example.com", password= "testpassword")
         self.client.force_authenticate(user=self.user)
 
     def test_retrieve_recipes(self):
