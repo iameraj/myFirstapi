@@ -3,7 +3,9 @@ Tests for Recipe APi
 """
 
 from decimal import Decimal
-from django.contrib.auth import get_user_model
+from django.contrib.auth import (
+    get_user_model,
+)  # todo: Use this instead of manually using custom user model
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
@@ -85,3 +87,21 @@ class PrivateRecipeAPITests(TestCase):
 
         serializer = RecipeDetailSerializer(recipe)
         self.assertEqual(res.data, serializer.data)
+
+    def test_create_recipe(self):
+        """Test creating recipe"""
+
+        payload = {
+            "title": "Sample",
+            "price": Decimal("4.34"),
+            "time_minutes": 15,
+        }
+
+        res = self.client.post(RECIPE_URL, payload)
+
+        self.assertEqual(status.HTTP_201_CREATED, res.status_code)
+        recipe = Recipe.objects.get(id=res.data["id"])
+
+        for k, v in payload.items():
+            self.assertEqual(getattr(recipe, k), v)
+        self.assertEqual(recipe.user, self.user)
