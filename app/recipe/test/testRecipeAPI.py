@@ -3,9 +3,7 @@ Tests for Recipe APi
 """
 
 from decimal import Decimal
-from django.contrib.auth import (
-    get_user_model,
-)  # todo: Use this instead of manually using custom user model
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
@@ -56,7 +54,7 @@ class PrivateRecipeAPITests(TestCase):
     """
 
     def setUp(self):
-        self.user = User.objects.create_user(
+        self.user = get_user_model().objects.create_user(
             email="test3@example.com",
             password="testpassword",
             name="TestUserIam",
