@@ -8,7 +8,7 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-from core.models import Recipe 
+from core.models import Recipe
 from recipe.serializers import RecipeSerializer, RecipeDetailSerializer
 
 RECIPE_URL = reverse("recipe:recipe-list")
@@ -32,9 +32,11 @@ def create_recipe(user, **params):
     recipe = Recipe.objects.create(user=user, **defaults)
     return recipe
 
+
 def create_user(**params):
     """Create and return a new user"""
     return get_user_model().objects.create_user(**params)
+
 
 class PublicRecipeAPITests(TestCase):
     """
@@ -58,7 +60,9 @@ class PrivateRecipeAPITests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.user = create_user(email="test@example.com", password= "testpassword")
+        self.user = create_user(
+            email="test@example.com", password="testpassword"
+        )
         self.client.force_authenticate(user=self.user)
 
     def test_retrieve_recipes(self):
@@ -102,3 +106,22 @@ class PrivateRecipeAPITests(TestCase):
         for k, v in payload.items():
             self.assertEqual(getattr(recipe, k), v)
         self.assertEqual(recipe.user, self.user)
+
+    def test_partial_update(self):
+        """Test patrial update"""
+
+        original_price = Decimal("4.64")
+        recipe = create_recipe(
+            user=self.user, title="sample title", price=original_price
+        )
+
+        payload = {
+            "title": "New_title",
+        }
+
+        res = self.client.patch(detail_url(recipe.id), payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        recipe.refresh_from_db()
+        self.assertEqual(recipe.title, payload["title"])
+        self.assertEqual(recipe.price, original_price)
