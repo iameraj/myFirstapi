@@ -1,6 +1,7 @@
 from django.test.runner import DiscoverRunner
-from termcolor import colored  
+from termcolor import colored
 from unittest import TestResult
+
 
 class CustomTestRunner(DiscoverRunner):
     def run_suite(self, suite, **kwargs):
@@ -27,4 +28,4 @@ class CustomTestRunner(DiscoverRunner):
             else:
                 print(colored("Failed", "red"))
 
-        return result 
+        return result
