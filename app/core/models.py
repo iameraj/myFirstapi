@@ -58,6 +58,17 @@ class Recipe(models.Model):
     time_minutes = models.IntegerField()
     price = models.DecimalField(max_digits=7, decimal_places=2)
     description = models.TextField(blank=True)
+    tags = models.ManyToManyField('Tags')
 
     def __str__(self):
         return self.title
+
+class Tags(models.Model):
+    """Tag for filtering recipes"""
+    name = models.CharField(max_length=100)
+    user = models.ForeignKey(
+            settings.AUTH_USER_MODEL,
+            on_delete=models.CASCADE,
+    )
+    def __str__(self):
+        return self.name
